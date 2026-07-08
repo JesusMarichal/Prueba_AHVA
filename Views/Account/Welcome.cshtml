@@ -1,0 +1,165 @@
+@model PruebaAHVA.Models.LoginViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - PruebaAHVA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Top Red Header */
+        .header-top {
+            background-color: #a81c1c; /* Dark red */
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .header-top .header-logo {
+            height: 36px;
+        }
+
+        .header-top .help-icon {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        /* Main Background Area */
+        .main-background {
+            /* Restamos el height del header y del footer */
+            height: calc(100% - 60px - 40px);
+            background-image: url('/images/Illustration.jpg');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* White Card */
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            width: 376px; /* Ancho exacto solicitado */
+            height: 436px; /* Alto exacto solicitado */
+            max-width: 100%; /* Permite responsiveness en móviles pequeños */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            
+            /* Usamos flexbox para centrar el contenido verticalmente dentro del nuevo alto fijo */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Text Styles */
+        h2 {
+            font-weight: 700;
+            font-size: 18px; /* Reducido de 24px */
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        /* Button */
+        .btn-custom {
+            background-color: #0056b3;
+            color: white;
+            font-size: 14px; /* Añadido para hacer texto del botón más pequeño */
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 8px 12px; /* Reducido el padding vertical de 12px a 8px */
+            width: 296px; /* Ancho exacto solicitado */
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-custom:hover {
+            background-color: #004494;
+        }
+
+        /* Form Controls */
+        .form-control {
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Bottom White Footer */
+        .footer-bottom {
+            background-color: white;
+            height: 40px; /* Tamaño menor que el header */
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Si necesitas poner un texto en el footer lo puedes poner aquí */
+        }
+    </style>
+</head>
+<body>
+    <div class="header-top">
+        <img src="~/images/header menu.png" alt="Logo" class="header-logo" />
+        <a href="#" class="help-icon">?</a>
+    </div>
+    
+    <div class="main-background">
+        <div class="login-card">
+            <div class="mb-4">
+                <img src="~/images/ceplan-illustration-success.jpg" alt="Success Illustration" style="width: 100px; height: auto;" />
+            </div>
+            
+            <h2>¡Bienvenida, July!</h2>
+            
+            <p class="subtitle">
+                Su cuenta en el aplicativo X está activada.<br><br>
+                Ya puede iniciar sesión.
+            </p>
+
+            <a href="@Url.Action("Login", "Account")" class="btn-custom d-inline-flex align-items-center justify-content-center text-decoration-none">
+                Iniciar sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- White Footer -->
+    <div class="footer-bottom">
+        <!-- Puedes agregar contenido aquí, como derechos reservados, logos adicionales, etc -->
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/login.js" asp-append-version="true"></script>
+</body>
+</html>

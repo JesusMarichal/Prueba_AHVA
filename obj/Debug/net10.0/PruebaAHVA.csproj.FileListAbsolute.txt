@@ -150,7 +150,6 @@ C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\scopedcss\bundle\PruebaAHVA.styles.
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\scopedcss\projectbundle\PruebaAHVA.bundle.scp.css
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\compressed\4iu2p1si07-{0}-b9sayid5wm-b9sayid5wm.gz
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\compressed\nl667wxo4a-{0}-61n19gt1b8-61n19gt1b8.gz
-C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\compressed\adpuuyrobk-{0}-sr73mmv14s-sr73mmv14s.gz
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\compressed\sk2usnfgfh-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\compressed\ldorivwt7j-{0}-bqjiyaj88i-bqjiyaj88i.gz
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\compressed\09uo82akxz-{0}-c2jlpeoesf-c2jlpeoesf.gz
@@ -224,3 +223,4 @@ C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\refint\PruebaAHVA.dll
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\PruebaAHVA.pdb
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\PruebaAHVA.genruntimeconfig.cache
 C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\ref\PruebaAHVA.dll
+C:\Users\maric\Prueba_AHVA\obj\Debug\net10.0\compressed\adpuuyrobk-{0}-t8y19otwth-t8y19otwth.gz

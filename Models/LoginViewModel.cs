@@ -4,10 +4,9 @@ namespace PruebaAHVA.Models
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "El correo electrónico es obligatorio")]
-        [EmailAddress(ErrorMessage = "Formato de correo electrónico inválido")]
-        [Display(Name = "Correo Electrónico")]
-        public string Email { get; set; } = string.Empty;
+        [Required(ErrorMessage = "El usuario es obligatorio")]
+        [Display(Name = "Usuario")]
+        public string Usuario { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "La contraseña es obligatoria")]
         [DataType(DataType.Password)]

@@ -1,8 +1,766 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model PruebaAHVA.Models.Usuario
+
+@{
+    Layout = null;
+
+    string NombreCompleto(string? apellidoPaterno, string? apellidoMaterno, string nombre)
+    {
+        var apellidos = $"{apellidoPaterno} {apellidoMaterno}".Trim();
+        return string.IsNullOrWhiteSpace(apellidos) ? nombre : $"{apellidos}, {nombre}";
+    }
+
+    string FechaInput(DateTime? fecha) => fecha.HasValue ? fecha.Value.ToString("yyyy-MM-dd") : "";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil de usuario - PruebaAHVA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f6f8;
+        }
+
+        .app-shell {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 64px;
+            background-color: #ffffff;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 16px;
+            gap: 6px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+            transition: width 0.2s ease;
+        }
+
+        .sidebar.expanded {
+            width: 200px;
+            align-items: stretch;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .sidebar .toggle-icon {
+            color: #4a5568;
+            padding: 8px 0 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            align-self: center;
+        }
+
+        .sidebar.expanded .toggle-icon {
+            align-self: flex-start;
+            padding-left: 4px;
+        }
+
+        .sidebar .nav-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            border-radius: 10px;
+            color: #6b7280;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .sidebar.expanded .nav-icon {
+            width: 100%;
+            justify-content: flex-start;
+            padding-left: 10px;
+        }
+
+        .sidebar .nav-icon svg {
+            flex-shrink: 0;
+        }
+
+        .sidebar .nav-icon.active {
+            background-color: #f8d7d7;
+            color: #a81c1c;
+        }
+
+        .sidebar .nav-label {
+            display: none;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .sidebar.expanded .nav-label {
+            display: inline;
+        }
+
+        /* Header */
+        .top-header {
+            background-color: #a81c1c;
+            height: 52px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 22px;
+            padding-right: 28px;
+            flex-shrink: 0;
+        }
+
+        .top-header .icon-btn {
+            color: #ffffff;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .top-header .badge-count {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background-color: #ffffff;
+            color: #a81c1c;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 1px 5px;
+            line-height: 1.4;
+        }
+
+        .user-block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a81c1c;
+        }
+
+        .user-name {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .user-menu-wrap {
+            position: relative;
+        }
+
+        .user-menu-wrap .user-block {
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background-color 0.15s ease;
+        }
+
+        .user-menu-wrap .user-block:hover,
+        .user-menu-wrap .user-block.open {
+            background-color: rgba(255,255,255,0.15);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 14px);
+            right: 10px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            min-width: 180px;
+            overflow: hidden;
+            z-index: 10;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+        }
+
+        .user-dropdown::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            right: 22px;
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            transform: rotate(45deg);
+            box-shadow: -2px -2px 4px rgba(0,0,0,0.03);
+        }
+
+        .user-dropdown.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-dropdown button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            border: none;
+            background: none;
+            text-align: left;
+            padding: 11px 16px;
+            font-size: 13px;
+            color: #1c1f26;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+
+        .user-dropdown button:hover {
+            background-color: #f5f6f8;
+            color: #a81c1c;
+        }
+
+        /* Main content */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px 36px;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+        }
+
+        .content-inner {
+            width: 100%;
+        }
+
+        .breadcrumb-text {
+            color: #8a8f98;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .page-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1c1f26;
+            margin-bottom: 12px;
+        }
+
+        .profile-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 26px 32px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+
+        .avatar-circle {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background-color: #d9e6f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c8db0;
+            flex-shrink: 0;
+        }
+
+        .profile-name {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1c1f26;
+        }
+
+        .badge-activo {
+            background-color: #e1f5ea;
+            color: #1e8a4c;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 2px 10px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .profile-subtitle {
+            color: #5b6270;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .profile-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            border-bottom: 1px solid #e6e8eb;
+            margin-top: 18px;
+            margin-bottom: 14px;
+        }
+
+        .profile-tabs a {
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            color: #8a8f98;
+            padding-bottom: 8px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .profile-tabs a.active {
+            color: #0d6efd;
+            border-bottom-color: #0d6efd;
+            font-weight: 600;
+        }
+
+        .field-label {
+            font-size: 11.5px;
+            color: #8a909c;
+            margin-bottom: 4px;
+        }
+
+        .field-value {
+            background-color: #eef0f3;
+            border: none;
+            border-radius: 6px;
+            padding: 9px 12px;
+            font-size: 12.5px;
+            color: #1c1f26;
+            width: 100%;
+        }
+
+        .field-value:disabled, .field-value[readonly] {
+            background-color: #eef0f3;
+        }
+
+        .field-with-icon {
+            position: relative;
+        }
+
+        .field-with-icon .edit-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c8db0;
+        }
+
+        .btn-save {
+            background-color: #0d6efd;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            margin-top: 18px;
+        }
+
+        .btn-save:hover {
+            background-color: #0b5ed7;
+        }
+
+        /* Footer */
+        .app-footer {
+            background-color: #ffffff;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+            padding: 10px 40px;
+            flex-shrink: 0;
+        }
+
+        /* Session expiry modal */
+        .session-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.35);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .session-overlay.open {
+            display: flex;
+        }
+
+        .session-modal {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 28px 32px;
+            width: auto;
+            max-width: calc(100% - 40px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+        }
+
+        .session-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: #e8a83c;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .session-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1c1f26;
+            margin-bottom: 8px;
+        }
+
+        .session-text {
+            font-size: 13.5px;
+            color: #5b6270;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            white-space: nowrap;
+        }
+
+        .btn-extend {
+            background-color: #e8a83c;
+            color: #1c1f26;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            padding: 9px 20px;
+            display: block;
+            margin-left: auto;
+        }
+
+        .btn-extend:hover {
+            background-color: #d99a2b;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar">
+            <button type="button" class="toggle-icon" onclick="document.getElementById('sidebar').classList.toggle('expanded')" title="Expandir/contraer menú" aria-label="Expandir/contraer menú">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+
+            <a href="#" class="nav-icon" title="Inicio">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5 12 4l9 7.5"></path>
+                    <path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"></path>
+                </svg>
+                <span class="nav-label">Inicio</span>
+            </a>
+
+            <a href="#" class="nav-icon" title="Institución">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="3" width="16" height="18"></rect>
+                    <line x1="9" y1="8" x2="9" y2="8"></line>
+                    <line x1="15" y1="8" x2="15" y2="8"></line>
+                    <line x1="9" y1="12" x2="9" y2="12"></line>
+                    <line x1="15" y1="12" x2="15" y2="12"></line>
+                    <line x1="9" y1="16" x2="9" y2="16"></line>
+                    <line x1="15" y1="16" x2="15" y2="16"></line>
+                    <line x1="10" y1="21" x2="10" y2="17"></line>
+                    <line x1="14" y1="21" x2="14" y2="17"></line>
+                </svg>
+                <span class="nav-label">Institución</span>
+            </a>
+
+            <a asp-controller="Home" asp-action="Index" class="nav-icon active" title="Perfil de usuario">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                    <circle cx="9" cy="10" r="2"></circle>
+                    <path d="M6 16c0-1.7 1.3-3 3-3s3 1.3 3 3"></path>
+                    <line x1="14" y1="8" x2="18" y2="8"></line>
+                    <line x1="14" y1="12" x2="18" y2="12"></line>
+                </svg>
+                <span class="nav-label">Perfil de usuario</span>
+            </a>
+
+            <a href="#" class="nav-icon" title="Buscar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <span class="nav-label">Buscar</span>
+            </a>
+        </aside>
+
+        <div class="main-area">
+            <header class="top-header">
+                <a href="#" class="icon-btn" title="Ayuda">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4"></path>
+                        <line x1="12" y1="17" x2="12" y2="17"></line>
+                    </svg>
+                </a>
+
+                <a href="#" class="icon-btn" title="Notificaciones">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.7 21a2 2 0 0 1-3.4 0"></path>
+                    </svg>
+                    <span class="badge-count">9+</span>
+                </a>
+
+                <div class="user-menu-wrap" id="userMenuWrap">
+                    <button type="button" class="user-block" id="userMenuBtn" onclick="event.stopPropagation(); document.getElementById('userDropdown').classList.toggle('open'); this.classList.toggle('open');">
+                        <span class="user-avatar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </span>
+                        <div class="user-name">@Model.Nombre.Split(' ')[0] @(Model.ApellidoPaterno?.Split(' ')[0])</div>
+                    </button>
+
+                    <div class="user-dropdown" id="userDropdown">
+                        <form asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+              <div class="content-inner">
+                <div class="breadcrumb-text">Perfil de usuario</div>
+                <div class="page-title">Perfil de usuario</div>
+
+                <div class="profile-card">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="avatar-circle">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </span>
+                        <div>
+                            <span class="profile-name">
+                                @NombreCompleto(Model.ApellidoPaterno, Model.ApellidoMaterno, Model.Nombre)
+                                <span class="badge-activo">@Model.Estado</span>
+                            </span>
+                            <div class="profile-subtitle">@Model.Cargo</div>
+                            <div class="profile-subtitle">@Model.Institucion</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-tabs">
+                        <a href="#" class="active">Información básica</a>
+                        <a href="#">Responsabilidades</a>
+                        <a href="#">Historial de responsabilidades</a>
+                    </div>
+
+                    <form asp-controller="Home" asp-action="EditarPerfil" method="post">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="field-label">Nombres</div>
+                                <input class="field-value" name="Nombre" value="@Model.Nombre" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Primer Apellido</div>
+                                <input class="field-value" name="ApellidoPaterno" value="@Model.ApellidoPaterno" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Segundo Apellido</div>
+                                <input class="field-value" name="ApellidoMaterno" value="@Model.ApellidoMaterno" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="field-label">Tipo de Documento de Identidad</div>
+                                <input class="field-value" name="TipoDocumento" value="@Model.TipoDocumento" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">N° de Documento de Identidad</div>
+                                <input class="field-value" name="NumeroDocumento" value="@Model.NumeroDocumento" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Fecha de nacimiento</div>
+                                <input type="date" class="field-value" name="FechaNacimiento" value="@FechaInput(Model.FechaNacimiento)" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="field-label">Nacionalidad</div>
+                                <input class="field-value" name="Nacionalidad" value="@Model.Nacionalidad" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Sexo</div>
+                                <input class="field-value" name="Sexo" value="@Model.Sexo" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Correo electrónico principal</div>
+                                <div class="field-with-icon">
+                                    <input class="field-value" name="Email" value="@Model.Email" />
+                                    <span class="edit-icon">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 20h9"></path>
+                                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="field-label">Correo electrónico secundario (Opcional)</div>
+                                <input class="field-value" name="CorreoSecundario" value="@Model.CorreoSecundario" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Teléfono Móvil</div>
+                                <div class="field-with-icon">
+                                    <input class="field-value" name="TelefonoMovil" value="@Model.TelefonoMovil" />
+                                    <span class="edit-icon">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 20h9"></path>
+                                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Teléfono secundario</div>
+                                <input class="field-value" name="TelefonoSecundario" value="@Model.TelefonoSecundario" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="field-label">Tipo de Contratación</div>
+                                <input class="field-value" name="TipoContratacion" value="@Model.TipoContratacion" />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-label">Fecha de contratación</div>
+                                <input type="date" class="field-value" name="FechaContratacion" value="@FechaInput(Model.FechaContratacion)" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-save" id="btnGuardar" style="display:none;">Guardar cambios</button>
+                    </form>
+                </div>
+              </div>
+            </div>
+
+            <footer class="app-footer"></footer>
+        </div>
+    </div>
+
+    <div class="session-overlay" id="sessionOverlay">
+        <div class="session-modal">
+            <span class="session-icon">!</span>
+            <div>
+                <div class="session-title">Su sesión esta a punto de expirar</div>
+                <div class="session-text">
+                    Por seguridad, su sesión expirará en <span id="sessionSeconds">60</span> segundos. Para continuar, seleccione "Extender sesión"
+                </div>
+                <button type="button" class="btn-extend" id="btnExtendSession">Extender sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <form asp-controller="Account" asp-action="ExtendSession" method="post" id="extendSessionForm" style="display:none;"></form>
+
+    <script>
+        (function () {
+            var SESSION_SECONDS = 60;
+            var WARNING_AT = 50;
+            var remaining = SESSION_SECONDS;
+
+            var overlay = document.getElementById('sessionOverlay');
+            var secondsLabel = document.getElementById('sessionSeconds');
+            var btnExtend = document.getElementById('btnExtendSession');
+            var extendForm = document.getElementById('extendSessionForm');
+
+            var timer = setInterval(function () {
+                remaining--;
+
+                if (remaining <= WARNING_AT && remaining > 0) {
+                    overlay.classList.add('open');
+                    secondsLabel.textContent = remaining;
+                }
+
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    window.location.href = '@Url.Action("Login", "Account")?expirado=1';
+                }
+            }, 1000);
+
+            btnExtend.addEventListener('click', function () {
+                fetch(extendForm.action, {
+                    method: 'POST',
+                    body: new FormData(extendForm)
+                }).then(function (response) {
+                    if (response.ok) {
+                        remaining = SESSION_SECONDS;
+                        overlay.classList.remove('open');
+                    }
+                });
+            });
+        })();
+
+        document.addEventListener('click', function () {
+            document.getElementById('userDropdown').classList.remove('open');
+            document.getElementById('userMenuBtn').classList.remove('open');
+        });
+
+        (function () {
+            var form = document.querySelector('.profile-card form');
+            var btnGuardar = document.getElementById('btnGuardar');
+            if (!form || !btnGuardar) return;
+
+            var valoresIniciales = {};
+            Array.prototype.forEach.call(form.elements, function (el) {
+                if (el.name) valoresIniciales[el.name] = el.value;
+            });
+
+            function detectarCambios() {
+                var cambio = Array.prototype.some.call(form.elements, function (el) {
+                    return el.name && valoresIniciales[el.name] !== el.value;
+                });
+                btnGuardar.style.display = cambio ? 'inline-block' : 'none';
+            }
+
+            form.addEventListener('input', detectarCambios);
+            form.addEventListener('change', detectarCambios);
+        })();
+    </script>
+</body>
+</html>

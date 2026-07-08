@@ -15,4 +15,28 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('passwordInput');
+    const eyeOpen = document.getElementById('eyeOpen');
+    const eyeClosed = document.getElementById('eyeClosed');
+
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function () {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeOpen.style.display = isPassword ? 'none' : 'block';
+            eyeClosed.style.display = isPassword ? 'block' : 'none';
+        });
+    }
+
+    const sessionExpiredAlert = document.getElementById('sessionExpiredAlert');
+    if (sessionExpiredAlert) {
+        setTimeout(function () {
+            sessionExpiredAlert.classList.add('fade-out');
+            setTimeout(function () {
+                sessionExpiredAlert.remove();
+            }, 400);
+        }, 5000);
+    }
 });

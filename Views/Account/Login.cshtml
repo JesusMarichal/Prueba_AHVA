@@ -10,13 +10,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Iniciar Sesión - PruebaAHVA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
         body, html {
             height: 100%;
             margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #f8f9fa;
         }
 
@@ -27,8 +27,13 @@
             width: 100%;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
+            padding-left: 20px;
             padding-right: 20px;
+        }
+
+        .header-top .header-logo {
+            height: 36px;
         }
 
         .header-top .help-icon {
@@ -40,13 +45,13 @@
 
         /* Main Background Area */
         .main-background {
-            /* Restamos el height del header y del footer */
             height: calc(100% - 60px - 40px);
             background-image: url('/images/Illustration.jpg');
             background-size: cover;
             background-position: center bottom;
             background-repeat: no-repeat;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
@@ -54,112 +59,407 @@
         /* White Card */
         .login-card {
             background: white;
-            border-radius: 12px;
-            padding: 40px;
-            width: 376px; /* Ancho exacto solicitado */
-            height: 436px; /* Alto exacto solicitado */
-            max-width: 100%; /* Permite responsiveness en móviles pequeños */
+            border-radius: 8px;
+            padding: 30px;
+            width: 350px;
+            max-width: 100%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-            
-            /* Usamos flexbox para centrar el contenido verticalmente dentro del nuevo alto fijo */
+        }
+
+        /* Tabs */
+        .tabs-container {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            margin-bottom: 25px;
         }
-
-        /* Text Styles */
-        h2 {
-            font-weight: 700;
-            font-size: 18px; /* Reducido de 24px */
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 20px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-style: normal;
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
             font-size: 14px;
-            line-height: 20px;
+            font-weight: 500;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: #8fa0ac;
+            color: white;
+            border-color: #8fa0ac;
+        }
+        .tab:not(.active) {
+            background-color: white;
+            color: #666;
+        }
+        .tab:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            border-right: none;
+        }
+        .tab:last-child {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Labels */
+        .form-label {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        /* Input Groups */
+        .input-group-text {
+            background-color: white;
+            border-right: none;
+            color: #999;
+            transition: all 0.2s;
+        }
+        .form-control {
+            border-left: none;
+            font-size: 14px;
+            padding-left: 0;
+            transition: all 0.2s;
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+
+        /* El campo de contraseña tiene un icono a la derecha (ojo):
+           sin borde derecho para que quede unido, sin separación */
+        #passwordInput {
+            border-right: none;
+        }
+
+        /* Evita que el autocompletado del navegador pinte el input de azul/amarillo
+           sin que el icono acompañante cambie junto con él */
+        .form-control:-webkit-autofill,
+        .form-control:-webkit-autofill:hover,
+        .form-control:-webkit-autofill:focus,
+        .form-control:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+            -webkit-text-fill-color: #212529;
+            caret-color: #212529;
+            transition: background-color 9999s ease-in-out 0s;
+        }
+
+        /* Soft Blue Focus Effect */
+        .mb-3:focus-within .form-label,
+        .mb-1:focus-within .form-label {
+            color: #4da3ff; /* Azul suave para el label */
+            transition: color 0.2s;
+        }
+        .input-group:focus-within .input-group-text, 
+        .input-group:focus-within .form-control {
+            border-color: #4da3ff; /* Borde azul suave */
+        }
+        .input-group:focus-within .input-group-text {
+            color: #4da3ff; /* Icono azul suave */
+        }
+        .input-group:focus-within {
+            box-shadow: 0 0 0 0.2rem rgba(77, 163, 255, 0.25); /* Resplandor azul suave */
+            border-radius: 0.375rem; /* Asegurar que el glow tenga la misma curva */
+        }
+        
+        .eye-icon {
+            background-color: white;
+            border-left: none;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* Link */
+        .forgot-link {
+            font-size: 12px;
+            color: #0056b3;
+            text-decoration: none;
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 20px;
         }
 
         /* Button */
         .btn-custom {
-            background-color: #0056b3;
+            background-color: #88a7c6;
             color: white;
-            font-size: 14px; /* Añadido para hacer texto del botón más pequeño */
+            font-size: 14px;
             font-weight: 500;
-            border-radius: 6px;
-            padding: 8px 12px; /* Reducido el padding vertical de 12px a 8px */
-            width: 296px; /* Ancho exacto solicitado */
+            border-radius: 4px;
+            padding: 10px;
+            width: 100%;
             border: none;
             transition: background-color 0.2s;
         }
-
         .btn-custom:hover {
-            background-color: #004494;
+            background-color: #6c8db0;
         }
 
-        /* Form Controls */
-        .form-control {
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 15px;
+        /* Support Card */
+        .support-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px 20px;
+            width: 350px;
+            max-width: 100%;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+        }
+        .support-icon {
+            width: 24px;
+            height: 24px;
+            fill: #0056b3;
+            margin-right: 15px;
+        }
+        .support-text {
+            font-size: 13px;
+            color: #555;
+            margin: 0;
+        }
+        .support-text a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: 500;
         }
 
         /* Bottom White Footer */
         .footer-bottom {
             background-color: white;
-            height: 40px; /* Tamaño menor que el header */
+            height: 40px;
             width: 100%;
+        }
+
+        /* Aviso de sesion expirada por inactividad */
+        .session-expired-alert {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background-color: #eaf4fc;
+            border: 1px solid #bfe0f7;
+            border-bottom: 4px solid #2f7fd1;
+            border-radius: 8px;
+            padding: 16px 20px;
+            width: 480px;
+            max-width: calc(100% - 40px);
+            position: fixed;
+            bottom: 65px;
+            right: 24px;
+            z-index: 2000;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        .session-expired-alert.fade-out {
+            opacity: 0;
+        }
+
+        .session-expired-alert .info-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: #2f7fd1;
+            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Si necesitas poner un texto en el footer lo puedes poner aquí */
+            flex-shrink: 0;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .session-expired-alert p {
+            margin: 0;
+            color: #1c1f26;
+            font-size: 13.5px;
+            line-height: 1.4;
+        }
+
+        /* Cuenta bloqueada temporalmente */
+        .lockout-modal {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            width: 500px;
+            max-width: calc(100% - 40px);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .lockout-modal img {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 18px;
+        }
+
+        .lockout-modal h2 {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1c1f26;
+            margin-bottom: 14px;
+        }
+
+        .lockout-modal p {
+            font-size: 14px;
+            color: #5b6270;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .lockout-modal button {
+            background-color: #0056b3;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 28px;
+        }
+
+        .lockout-modal button:hover {
+            background-color: #004494;
+        }
+
+        /* Alerta de error de login */
+        .login-error-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background-color: #fdecea;
+            border-left: 3px solid #d32f2f;
+            border-radius: 6px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+        }
+
+        .login-error-alert svg {
+            color: #d32f2f;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .login-error-alert .validation-summary-errors ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-error-alert .validation-summary-errors li {
+            color: #9a1c1c;
+            font-size: 13px;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
     <div class="header-top">
+        <img src="~/images/header menu.png" alt="Logo" class="header-logo" />
         <a href="#" class="help-icon">?</a>
     </div>
-    
+
     <div class="main-background">
-        <div class="login-card">
-            <div class="mb-4">
-                <img src="~/images/ceplan-illustration-success.jpg" alt="Success Illustration" style="width: 100px; height: auto;" />
+        @if (Context.Request.Query.ContainsKey("expirado"))
+        {
+            <div class="session-expired-alert" id="sessionExpiredAlert">
+                <span class="info-icon">i</span>
+                <p>Su sesión ha expirado debido a inactividad. Por favor, inicie sesión nuevamente.</p>
             </div>
-            
-            <h2>¡Bienvenida, July!</h2>
-            
-            <p class="subtitle">
-                Su cuenta en el aplicativo X está activada.<br><br>
-                Ya puede iniciar sesión.
-            </p>
+        }
 
-            <form id="loginForm" asp-action="Login" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        @if (ViewBag.CuentaBloqueada == true)
+        {
+            <div class="lockout-modal">
+                <img src="~/images/Group 1594985.png" alt="Cuenta bloqueada" />
+                <h2>Cuenta bloqueada temporalmente</h2>
+                <p>Has excedido el número máximo de intentos fallidos (5). Por seguridad, tu cuenta ha sido bloqueada durante 15 minutos. Intenta nuevamente más tarde.</p>
+                <button type="button" onclick="window.location.href='@Url.Action("Login", "Account")'">Entendido</button>
+            </div>
+        }
+        else
+        {
+            <!-- Login Card -->
+            <div class="login-card">
+                <div class="tabs-container">
+                    <div class="tab active">DNI</div>
+                    <div class="tab">CE</div>
+                </div>
 
-                <!-- Enviamos datos ocultos para simular el submit válido sin mostrar inputs -->
-                <input type="hidden" name="Email" value="test@test.com" />
-                <input type="hidden" name="Password" value="password123" />
+                <form id="loginForm" asp-action="Login" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Usuario</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <!-- User Icon -->
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </span>
+                            <input asp-for="Usuario" class="form-control" placeholder="Ingresar usuario" />
+                        </div>
+                        <span asp-validation-for="Usuario" class="text-danger" style="font-size: 12px;"></span>
+                    </div>
 
-                <button type="submit" class="btn-custom" id="loginBtn">
-                    <span class="spinner-border spinner-border-sm d-none" id="loginSpinner" role="status" aria-hidden="true"></span>
-                    <span id="loginBtnText">Iniciar sesión</span>
-                </button>
-            </form>
-        </div>
+                    <div class="mb-1">
+                        <label class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <!-- Lock Icon -->
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input asp-for="Password" id="passwordInput" type="password" class="form-control" placeholder="Ingresar contraseña" />
+                            <span class="input-group-text eye-icon" id="togglePassword">
+                                <!-- Eye Icon -->
+                                <svg id="eyeOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg id="eyeClosed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.6 18.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger" style="font-size: 12px;"></span>
+                    </div>
+
+                    <a href="#" class="forgot-link">¿Olvidó su contraseña?</a>
+
+                    @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                    {
+                        <div class="login-error-alert">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12" y2="16"></line>
+                            </svg>
+                            <div asp-validation-summary="ModelOnly"></div>
+                        </div>
+                    }
+
+                    <button type="submit" class="btn-custom" id="loginBtn">
+                        <span class="spinner-border spinner-border-sm d-none" id="loginSpinner" role="status" aria-hidden="true"></span>
+                        <span id="loginBtnText">Ingresar</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Support Card -->
+            <div class="support-card">
+                <img src="~/images/Group 1594985.png" alt="Soporte" class="support-icon" />
+                <p class="support-text">
+                    ¿Necesita ayuda?, contacte con el <a href="#">área de soporte.</a>
+                </p>
+            </div>
+        }
     </div>
 
     <!-- White Footer -->
-    <div class="footer-bottom">
-        <!-- Puedes agregar contenido aquí, como derechos reservados, logos adicionales, etc -->
-    </div>
+    <div class="footer-bottom"></div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
