@@ -1,0 +1,169 @@
+@model PruebaAHVA.Models.LoginViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - PruebaAHVA</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Top Red Header */
+        .header-top {
+            background-color: #a81c1c; /* Dark red from the design */
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 20px;
+        }
+
+        .header-top .help-icon {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        /* Main Background Area */
+        .main-background {
+            height: calc(100% - 60px);
+            background-image: url('/images/Illustration.jpg');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* White Card */
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        /* Icon Circle */
+        .icon-circle {
+            background-color: #ffeaea;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
+
+        .icon-circle svg {
+            width: 45px;
+            height: 45px;
+            fill: #d85c5c;
+        }
+
+        /* Text Styles */
+        h2 {
+            font-weight: 700;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        /* Button */
+        .btn-custom {
+            background-color: #0056b3;
+            color: white;
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-custom:hover {
+            background-color: #004494;
+        }
+
+        /* Form Controls */
+        .form-control {
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-top">
+        <a href="#" class="help-icon">?</a>
+    </div>
+    
+    <div class="main-background">
+        <div class="login-card">
+            <div class="mb-4">
+                <img src="~/images/ceplan-illustration-success.jpg" alt="Success Illustration" style="width: 100px; height: auto;" />
+            </div>
+            
+            <h2>¡Bienvenida, July!</h2>
+            
+            <p class="subtitle">
+                Su cuenta en el aplicativo X está activada.<br><br>
+                Ya puede iniciar sesión.
+            </p>
+
+            <form id="loginForm" asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- 
+                Si deseas que la vista de login funcione literalmente como un login, 
+                debes descomentar los campos de abajo. 
+                Si querías exactamente la pantalla de tu imagen sin los inputs, los he ocultado.
+                -->
+                <!--
+                <input asp-for="Email" class="form-control" placeholder="Correo Electrónico" />
+                <span asp-validation-for="Email" class="text-danger d-block mb-2 text-start"></span>
+                
+                <input asp-for="Password" class="form-control" placeholder="Contraseña" />
+                <span asp-validation-for="Password" class="text-danger d-block mb-3 text-start"></span>
+                -->
+
+                <!-- Enviamos datos ocultos para que el controlador lo acepte si haces submit sin los inputs -->
+                <input type="hidden" name="Email" value="test@test.com" />
+                <input type="hidden" name="Password" value="password123" />
+
+                <button type="submit" class="btn-custom" id="loginBtn">
+                    <span class="spinner-border spinner-border-sm d-none" id="loginSpinner" role="status" aria-hidden="true"></span>
+                    <span id="loginBtnText">Iniciar sesión</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/login.js" asp-append-version="true"></script>
+</body>
+</html>
